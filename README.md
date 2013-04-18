@@ -4,6 +4,7 @@ Each script has it's own documentation inline. Check them out for more informati
 
 Current scripts:
 * Lines of code committed to Github this week
+* Top 5 repos by engagement
 
 Helper scripts:
 * Get an OAuth2 token from Github's API
