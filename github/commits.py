@@ -71,7 +71,22 @@ def build_uri(uri):
     return '%s&access_token=%s' % (uri, GITHUB_TOKEN)
 
 def get_data(uri):
-    return json.load(urllib.urlopen(build_uri(uri)))
+    response    =   urllib.urlopen(build_uri(uri))
+    headers     =   response.headers
+    data        =   json.load(response)
+    if headers.get('Link'):
+        # see if we have a next page to grab
+        links   =   headers.get('Link').split(',')
+        links   =   [link.strip() for link in links]
+        for link in links:
+            link    =   link.split(';')
+            if len(link) == 2:
+                link_uri    =   link.pop(0).strip('<>').strip('')
+                link_rel    =   link.pop(0).replace('rel=', '').replace('"', '').strip()
+                if link_rel == "next":
+                    # we can assume the data is a list or it wouldn't be paginated
+                    data    =   data + get_data(link_uri)
+    return data
 
 for repo in get_data('/user/repos'):
     for commit in get_data('/repos/%s/commits' % repo.get('full_name')):
