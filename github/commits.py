@@ -52,6 +52,17 @@ while i < 7:
     }
     i   +=  1
 
+def naturalday(date_obj):
+    if not hasattr(date_obj, 'isoformat'):
+        date_obj    =   datetime.strptime(date_obj, '%Y-%m-%d').date()
+    diff    =   today - date_obj
+    if diff.days == 0:
+        return 'today'
+    elif diff.days == 1:
+        return 'yesterday'
+    else:
+        return date_obj.strftime('%A')
+
 def build_uri(uri):
     if uri.find('https') == -1:
         uri =   'https://api.github.com/%s' % uri.lstrip('/')
@@ -81,6 +92,8 @@ for stat in LABELS:
         numbers =   loc.get(day)
         dp.append({"title": day, "value": numbers.get(stat)})
     dp.sort(key = lambda x: x.get('title'))
+    for datum in dp:
+        datum['title']  =   naturalday(datum.get('title'))
     datasequences.append({
         "title":        label,
         "color":        COLORS.get(stat),
